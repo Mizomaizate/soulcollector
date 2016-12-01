@@ -18,11 +18,12 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create
 
 function preload() {
 
-    game.load.image('sky', 'assets/sky.png');
-    game.load.image('ground', 'assets/platform.png');
-    game.load.image('star', 'assets/star.png');
+    game.load.image('sky', 'assets/asriel.png');
+    game.load.image('ground', 'assets/ruin.png');
+    game.load.image('star', 'assets/soul.png');
     game.load.spritesheet('dude', 'assets/chara.png', 32, 48);
     game.load.spritesheet('baddie', 'assets/baddie.png', 32, 32);
+    game.load.spritesheet('death', 'assets/skelly.png', 163, 338);
 }
 
 var player;
@@ -66,7 +67,7 @@ function create() {
 
     // The player and its settings
     player = game.add.sprite(32, game.world.height - 150, 'dude');
-
+   
     //  We need to enable physics on the player
     game.physics.arcade.enable(player);
 
@@ -115,13 +116,33 @@ function create() {
     cursors = game.input.keyboard.createCursorKeys();
     
 }
+function kill(){
+    game.add.sprite(game.world.width/2-163/2, game.world.height/2-338/2, 'death'); 
+    player.kill();
+    gameover();
+}
+    function gameover() {
 
+    var style = { font: "bold 32px Arial", fill: "red", boundsAlignH: "center", boundsAlignV: "middle" };
+    var text = game.add.text(0, 0, "GAME OVER", style);
+}
+
+    
+    function sendback(){
+ if(enemy.body.x>750){
+    enemy.body.velocity.x=-150;
+ }
+    if(enemy.body.x<10){
+    enemy.body.velocity.x=150;  
+ }
+}
 function update() {
 
     //  Collide the player and the stars with the platforms
     game.physics.arcade.collide(player, platforms);
     game.physics.arcade.collide(stars, platforms);
-    game.physics.arcade.collide(enemy, platforms);
+    game.physics.arcade.collide(enemy, platforms, sendback);
+    game.physics.arcade.collide(player, enemy, kill);
 
     //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
     game.physics.arcade.overlap(player, stars, collectStar, null, this);
